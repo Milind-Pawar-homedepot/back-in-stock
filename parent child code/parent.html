@@ -1,0 +1,108 @@
+<script>
+try {
+	const readCookie = function (e) {
+        e = encodeURIComponent(e)
+        let t = (';' + document.cookie).split(' ').join(';'),
+          n = t.indexOf(';' + e + '='),
+          i = n < 0 ? n : t.indexOf(';', n + 1)
+        return n < 0
+          ? ''
+          : decodeURIComponent(
+            t.substring(n + 2 + e.length, i < 0 ? t.length : i)
+          )
+    }
+    const getStoreID = function () {
+            let storeID = "";
+            let decodedValue = JSON.parse(decodeURIComponent(readCookie("THD_LOCALIZER")));
+            if (decodedValue) {
+                let locStore = decodedValue.THD_LOCSTORE;
+                if (locStore.length > 0) {
+                    let locStoreDetails = locStore.split("+");
+                    if (locStoreDetails.length > 1) {
+                        storeID = locStoreDetails[0] || '';
+                        if (storeID != '') {
+                            if (!isNaN(parseInt(locStoreDetails[0]))) {
+                                storeID = locStoreDetails[0];
+                            }
+                        }
+                    }
+                }
+            }
+            if (!storeID && digitalData && digitalData.user && digitalData.user.localization) {
+                storeID = digitalData.user.localization.storeNumber;
+            }
+            if (!storeID) {
+                storeID = new URLSearchParams(targetPageParamsAll()).get("storeNumber") || window.storeNumber;;
+            }
+            if (!storeID) {
+                storeID = ""
+            };
+        return storeID;
+    }
+    const extractUserInfo = function () {
+            return atob(JSON.parse((readCookie("THD_USER"))));
+    };
+    const getSVOC_ID = function () {
+            const info = JSON.parse(extractUserInfo());
+            if (info) {
+                svoc_id = info['svocCustomerAccountId'];
+            }
+            return svoc_id;
+    }
+    async function getBackInStock() {
+    	let storeID = getStoreID();
+    	let svoc = getSVOC_ID();
+    	if(storeID != "" && svoc != ""){
+        const request = 'https://datascience-testservice-api.hd-datascience-prod.gcp.homedepot.com/dts/v1/product?anchor='+svoc+'&model=back_in_stock_alert&appid=desktop&key=AnPrMR0LKfdglJQfoHqsT4sAhDLHNaGw&storeid='+storeID;
+        const options = {
+            method: 'GET',
+            headers: {
+                'Accept': 'application/json',
+                'Content-Type': 'application/json'
+            }
+        };
+        const response = fetch(request, options);
+        return response.then(function(data) {
+            return data.json().then(function(jsonResponse) {
+                if(jsonResponse != '' && jsonResponse != null) {
+                  return jsonResponse;
+                }
+                return false;
+            }).catch(function(err) {
+                return false;
+            })
+        }).catch(function(err) {
+            return false;
+        });
+      }
+    }
+  const cookieStorage = {
+    set: function(cname, cvalue, days = 1) {
+        let d = new Date();
+        d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+    }
+   };
+    async function callBackInStockCard(){
+    	let data = await getBackInStock();
+    	if(data && data.products){
+    		adobe.target.getOffer({   
+			  mbox: "child-2816",   
+			  success: function(offers) {           
+			        adobe.target.applyOffer( {  
+			           mbox: "child-2816", 
+			           offer: offers  
+			        } ); 
+			  },   
+			  error: function(s, e) {}
+			}); 
+			window.__tntBackInstock = data;
+          if (!readCookie("php_test_card")) {
+        	cookieStorage.set("php_test_card", "true");
+    	  }
+    	}
+    }
+    setTimeout(function(){callBackInStockCard()}, 500);
+} catch(t) {}
+</script>
