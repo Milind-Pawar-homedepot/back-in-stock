@@ -1,0 +1,642 @@
+<style id="tnt_personalized_recos" type="text/css">
+  #product-section-irg .owl-stage {
+    display: flex;
+  }
+
+  .tnt_owl-item .bttn-outline--primary {
+    width: 100% !important;
+  }
+
+  #required_items .carousel__prev.disabled {
+    display: none;
+  }
+
+  #required_items .carousel__next.disabled {
+    display: none;
+  }
+
+  /* @media only screen and (max-width: 800px) {
+    .tnt_owl-item .certona__productbttnwrapper {
+      display: none;
+    }
+  } */
+
+  .tnt__bttn__content {
+    font-weight: bold;
+    font-family: helvetica-neue-bold, Helvetica Neue, Helvetica, Arial,
+      sans-serif;
+  }
+</style>
+<script type="text/javascript">
+try {
+  function readCookie  (e) {
+      e = encodeURIComponent(e)
+      let t = (';' + document.cookie).split(' ').join(';'),
+        n = t.indexOf(';' + e + '='),
+        i = n < 0 ? n : t.indexOf(';', n + 1)
+      return n < 0
+        ? ''
+        : decodeURIComponent(
+          t.substring(n + 2 + e.length, i < 0 ? t.length : i)
+        )
+    }
+    function getPriceBreakdown  (price)  {
+      if (typeof price === 'number') {
+        let dollar = price | 0
+        let currency = !dollar ? '¢' : '$'
+        let cent = (price % 1).toFixed(2).match(/\d{2}$/g)[0]
+        return { currency, dollar, cent }
+      }
+      return null
+    }
+   
+    function getStoreID () {
+          let storeID = "";
+          let decodedValue = JSON.parse(decodeURIComponent(readCookie("THD_LOCALIZER")));
+          if (decodedValue) {
+              let locStore = decodedValue.THD_LOCSTORE;
+              if (locStore.length > 0) {
+                  let locStoreDetails = locStore.split("+");
+                  if (locStoreDetails.length > 1) {
+                      storeID = locStoreDetails[0] || '';
+                      if (storeID != '') {
+                          if (!isNaN(parseInt(locStoreDetails[0]))) {
+                              storeID = locStoreDetails[0];
+                          }
+                      }
+                  }
+              }
+          }
+          if (!storeID && digitalData && digitalData.user && digitalData.user.localization) {
+              storeID = digitalData.user.localization.storeNumber;
+          }
+          if (!storeID && _dD && _dD.user && _dD.user.localization) {
+              storeID = _dD.user.localization.storeNumber;
+          }
+          //storeID = storeID ? parseInt(storeID, 10) : "";
+          if (!storeID) {
+              storeID = ""
+          };
+          return storeID;
+      }
+  
+    /*const extractUserInfo = function () {
+          return atob(JSON.parse((readCookie("THD_USER"))));
+      };
+    const getSVOC_ID = () => {
+          const info = JSON.parse(extractUserInfo());
+          if (info) {
+              svoc_id = info['svocCustomerAccountId'];
+          }
+  
+          return svoc_id;
+      }
+    */
+    function createSingleCard(data) {
+       alert("createSingleCard")
+          console.log(data)
+  
+          console.log(data[0].productId)
+  
+          let imageURL = data[0].imageURL;
+          if (imageURL.includes('<SIZE>')) {
+              imageURL = imageURL.replace("<SIZE>", "300");
+          }
+          let price = data[0].price.toString();
+          let priceWithDecimal = price.split('.');
+           if(priceWithDecimal[1]  == undefined){
+              priceWithDecimal[1] ="00"
+          }
+  
+          let html_data = ` 
+        <div role="presentation" class="content-card__body">
+           <div class="col__12-12 content-card__header">
+              <div class="row-header row-header--nomargin">
+                 <div class="row-header__title">
+                    <h2 style="background-color: #fff!important; color: #000!important;" class="row-header__text row-header__text--plain">It's Back In Stock</h2>
+                 </div>
+              </div>
+           </div>
+           <div class="content-card__summary" style="max-height: none;">
+              <div class="carousel" style="margin-right: -15px; width: calc(100% + 15px);">
+              
+                 <div class="axis-horizontal slider-wrapper">
+                    <div class="slider animated" style="transform: translate3d(0px, 0px, 0px); transition-duration: 350ms;">
+                    
+                          <article class="product__container " data-type="product">
+                             <meta data-prop="productID" content="`+ data[0].productId + `">
+                             <meta data-prop="name" content="`+ data[0].productName + `">
+                             <meta data-prop="brand" content="DUST OFF">
+                             <div class="product__img_link_container">
+                                <a href="`+ data[0].canonicalURL + `">
+                                   <div class="product__image-container" style="width: 170px;"><img src="`+ imageURL + `" alt="Image not found" class="product__image"></div>
+                                </a>
+                             </div>
+                          </article>
+                    
+                       <div style="padding-top: 5%;padding-right: 10%;">
+                             <a href="`+ data[0].canonicalURL + `">
+                                  <div class="product__description" style=" padding-bottom: 4%; display:table" >
+                                   
+                                      <span>
+                                      <span class="product__brand">`+ data[0].brand + ` </span>` + data[0].productName + `</span>
+                                     
+                                  </div>
+                            </a>
+                          <div class="rating-and-reviews"><a href="`+ data[0].canonicalURL + `" class="reviews"><span class="stars" rel="` + data[0].rating + `" style="width: 92.72%;"></span></a><a class="number-rating" href="/p/Sterilite-70-Qt-Ultra-Storage-Box-19888604/204606576">(` + data[0].reviews + `)</a></div>
+                          <span class="product-price"><b class="product-price__container"><span class="product-price__dollarSign"><sup class="product-price__dollarSign_sup">$</sup></span><span>`+ priceWithDecimal[0] + `</span><span class="product-price__cents"><sup class="product-price__cents_sup">` + priceWithDecimal[1] + `</sup></span></b></span>
+                       </div>
+                    </div>
+                 </div>
+                
+              <span >
+                  <button id="tht_add_to_cart"class="u--marginNormal-top bttn-outline bttn-outline--primary" style="width: 95%;">
+                      <span class="bttn__content">Add to Cart</span>
+                  </button>
+              </span>
+           </div>
+        </div>
+     </div>`
+            if(document.querySelector('[data-automation-id="testAndTargetBlankCard"]'))
+            {
+
+              document.querySelector('[data-automation-id="testAndTargetBlankCard"]').innerHTML= html_data
+            }
+  
+            if(document.getElementById("tht_add_to_cart"))
+            {
+                      let addToCartBtn = document.getElementById("tht_add_to_cart")
+                      addToCartBtn.addEventListener("click", function () {
+                          const storeID = getStoreID();
+                          window.tntExposedObjects['thd-cart-bindings'].addToCart({
+                              "itemId": data[0].productId,
+                              "quantity": 1,
+                              "fulfillmentMethod": "BOPIS",
+                              "fulfillmentLocation": storeID
+                          }, {
+                              host: '//' + window.location.host,
+                              channel: 'desktop',
+                          })
+                              .on('success', function (resp) {
+                                  //console.log(resp);
+                              })
+                              .on('error', function (resp) {
+                                  //console.log(resp);
+                              })
+                      });
+         }
+  
+      }
+    
+      function productClickHandler(e) {
+      console.log(e.currentTarget.classList)
+      if (e.currentTarget.classList.contains('certona__productbttnwrapper')) {
+        let id = parseInt(e.currentTarget.firstElementChild.attributes['data-item-id'].value )
+        console.log(id)
+        let channel
+        let x = window.matchMedia('(max-width: 800px)')
+        if (x.matches) {
+          channel = 'mobile'
+        } else {
+          channel = 'desktop'
+        }
+        e.preventDefault()
+        if (id) {
+         const storeID = getStoreID();
+              window.tntExposedObjects['thd-cart-bindings'].addToCart({
+                  "itemId":id,
+                  "quantity": 1,
+                  "fulfillmentMethod": "BOPIS",
+                  "fulfillmentLocation": storeID
+              }, {
+                  host: '//' + window.location.host,
+                  channel: 'desktop',
+              })
+                  .on('success', function (resp) {
+                      //console.log(resp);
+                  })
+                  .on('error', function (resp) {
+                      //console.log(resp);
+                  })
+          };
+  
+      
+  
+                  
+      } else {
+      }
+    }
+    
+    const anchorPattern = /\/\d+$/g,
+      negativeIntegerPattern = /-\d+/g,
+      translate3dPattern = /translate3d\(-?\d+px, -?\d+px, -?\d+px\)/g
+
+    function initializeCarosuel(html, options = {}) {
+      let carousel = this
+      carousel = $(carousel).find('.carousel__wrapper')
+      options = Object.assign(
+        {
+          autoWidth: true,
+          dots: false,
+          items: 4,
+          margin: 0,
+          nav: true,
+          navClass: [
+            'carousel__prev carousel__height',
+            'carousel__next carousel__height',
+          ],
+          navText: [
+            '<svg class="carousel__prev-button" viewBox="0 0 12 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><defs></defs><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><path d="M3.35738643,4.0642103 L3.35738643,3.09586423 L17.8582152,3.09586423 L17.8582152,5.03255637 L5.28304981,5.03255637 L5.28304981,17.6355953 L3.35738643,17.6355953 L3.35738643,4.0642103 Z" id="back-arrow" fill="#F96302" sketch:type="MSShapeGroup" transform="translate(10.607801, 10.365730) rotate(-45.000000) translate(-10.607801, -10.365730) "></path></g></svg>',
+            '<svg class="carousel__next-button" viewBox="0 0 12 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns"><defs></defs><g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage"><path d="M-5.88468462,4.30628135 L-5.88468462,3.33793528 L8.61614419,3.33793528 L8.61614419,5.27462742 L-3.95902124,5.27462742 L-3.95902124,17.8776664 L-5.88468462,17.8776664 L-5.88468462,4.30628135 Z" id="next-arrow" fill="#F96302" sketch:type="MSShapeGroup" transform="translate(1.365730, 10.607801) rotate(-225.000000) translate(-1.365730, -10.607801) "></path></g></svg>',
+          ],
+          slideBy: 1,
+          onInitialized: () => {
+            setTimeout(() => {
+              carousel
+                .trigger('replace.owl.carousel', html)
+                .trigger('refresh.owl.carousel')
+            }, 1000)
+          },
+          onTranslated: () => {
+            if (carousel.find('.owl-nav .carousel__next.disabled').length) {
+              if (negativeIntegerPattern.test(this.$stage.css('transform'))) {
+                const currentX = parseFloat(
+                  this.$stage
+                    .css('transform')
+                    .match(negativeIntegerPattern)[0]
+                )
+                if (translate3dPattern.test(this.$stage.attr('style'))) {
+                  let adjustedTransform =
+                    $(this.$stage).parent().get(0).getClientRects()[0].right -
+                    $(this.$stage).get(0).getClientRects()[0].right
+                  adjustedTransform = currentX + adjustedTransform
+                  $(this.$stage).attr(
+                    'style',
+                    'transform: ' +
+                    $(this.$stage)
+                      .attr('style')
+                      .match(translate3dPattern)[0]
+                      .replace(negativeIntegerPattern, adjustedTransform)
+                      .concat(
+                        ';transition: all 0.35s ease 0s;width: max-content;'
+                      )
+                  )
+                }
+              }
+            }
+          },
+        },
+        options
+      )
+      carousel.owlCarousel(options)
+    }  
+    
+    function buildProducts  ({ metadata, data, products })  {
+      let proHtml = ''
+      products.forEach((value, index) => {
+        if (value) {
+          let productName = value.productName
+          let notRated = ''
+          let brand = value.brand ? value.brand + ' ' : ''
+          let canonicalURL = value.canonicalURL
+          let imagePath =
+            (value.imageURL && value.imageURL.replace('<SIZE>', '300')) ||
+            value.imageURL
+          let rating =
+            (value.rating && (100 * parseFloat(value.rating)) / 5) || 0
+          let reviews = value.reviews ? '(' + value.reviews + ')' : ''
+          let productId = value.id
+          let pricingWrapper = ''
+          let uom = value.uom ? value.uom : ''
+          let originalPrice = value.originalPrice ? value.originalPrice : ''
+          let price = value.price ? getPriceBreakdown(value.price) : 0
+          let { currency, dollar, cent } = price
+          let atcClass = 'js-certona-atc'
+          let isActiveItem = ''
+          let priceHTML = dollar
+            ? '<span class="price__format">' +
+            currency +
+            '</span>' +
+            dollar +
+            '<span class="price__format">' +
+            cent +
+            '</span>'
+            : cent + '<span class="price__format">' + currency + '</span>'
+         
+          let wasPriceHTML = originalPrice
+            ? '<div class="price__special">Was&nbsp;<span class="u__strike">' +
+            originalPrice +
+            '</span></div>'
+            : ''
+          if (value.itemType === 'MAJOR_APPLIANCE') {
+            let channel = THD_GLOBAL.channel || 'web'
+            atcClass = 'js-certona-atc-appliance'
+          }
+          proHtml +=
+            `<div class="tnt_owl-item owl-item` +
+            isActiveItem +
+            `" style="width: auto"> <div class="certona__productpod" data-type="product"> <meta data-prop="productId" content="` +
+            productId +
+            `"/> <meta data-prop="name" content="` +
+            productName +
+            `"/> <meta data-prop="brand" content="` +
+            brand +
+            `"/> <div class="certona__productimagewrapper"> <a href="//www.homedepot.com` +
+            canonicalURL +
+            `" data-product-id="` +
+            productId +
+            `" data-schema="required_items" data-strategy="project-based" data-version="v1" > <img class="certona__productimg" src="` +
+            imagePath +
+            `" alt="` +
+            productName +
+            `" s="" loading="lazy" width="170" height="170"/> </a> </div><div class="certona__productdescriptionwrapper"> <a class="" href="//www.homedepot.com` +
+            canonicalURL +
+            `" data-product-id="202312407" data-schema="required_items" data-strategy="project-based" data-version="v1" data-pos="` +
+            (index + 1) +
+            `" > <span class="certona__brand">` +
+            brand +
+            `</span> <span>` +
+            productName +
+            `</span> </a> </div><div class="certona__productratingwrapper"> <a class="reviews" href="//www.homedepot.com` +
+            canonicalURL +
+            `" data-product-id="` +
+            productId +
+            `" data-schema="required_items" data-strategy="project-based" data-version="v1" data-pos="` +
+            (index + 1) +
+            `" > <span class="stars" style="width:` +
+            rating +
+            `%" ></span> </a> <a href="//www.homedepot.com` +
+            canonicalURL +
+            `" data-schema="required_items" data-strategy="project-based" data-version="v1" data-pos="` +
+            (index + 1) +
+            `" >`+reviews+`</a > </div><div class="certona__productpricingwrapper"> <span class="u__normal u__text--alternate u--hide"> See Lower Price in Cart </span> <div class="price"> ` +
+            priceHTML +
+            ` </div>` +
+            wasPriceHTML +
+            ` </div><div class="certona__productbttnwrapper"> <a class="` +
+            atcClass +
+            ` bttn-outline bttn-outline--primary" data-onclickbeacon="" data-quantity="1" data-item-id="` +
+            productId +
+            `" data-schema="required_items" data-strategy="project-based" data-version="v1" data-pos="` +
+            (index + 1) +
+            `"> <span class="tnt__bttn__content">Add To Cart</span> </a> </div></div></div>`
+        }
+      })
+      
+      return proHtml
+    }
+
+    async function buildCarousel(products) {
+        alert("buildCarousel")
+     //6 const products = await getProducts()
+      const productsHTML = buildProducts(products)
+      let container
+      let carousel
+      if (products) {
+        let element = ` <div id="required_items" style="padding: 0px;background-color: #fff;" data-type="container">
+      <meta data-prop="name" content="required_items">
+      <div class="grid isBound certona__wrapper certona__wrapper--nofill ">
+         <div class="col__12-12">
+            <div role="presentation" class="content-card__body">
+             <div class="col__12-12 content-card__header">
+                <div class="row-header--nomargin">
+                   <div class="row-header__title">
+                      <h2 class="row-header__text row-header__text--plain"
+                       style="background-color: #fff!important;color: #000!important;">It's Back In Stock</h2>
+                   </div>
+                </div>
+             </div>
+         </div>
+         <div class="col__12-12">
+            <div class="carousel__wrapper owl-loaded owl-drag">
+               <div class="owl-stage-outer">
+                  <div class="carousel__right-gradient carousel__show">&nbsp;</div>
+                  <div class="carousel__left-gradient carousel__hide">&nbsp;</div>
+                  <div class="owl-stage" style="transform: translate3d(0px, 0px, 0px); transition: all 0s ease 0s; width: 1380px;">
+                    
+                  </div>
+               </div>
+               <div class="carousel__nav">
+                  <button type="button" role="presentation" class="carousel__prev disabled">
+                     <svg class="carousel__prev-button" viewBox="0 0 12 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+                        <defs></defs>
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+                           <path d="M3.35738643,4.0642103 L3.35738643,3.09586423 L17.8582152,3.09586423 L17.8582152,5.03255637 L5.28304981,5.03255637 L5.28304981,17.6355953 L3.35738643,17.6355953 L3.35738643,4.0642103 Z" id="back-arrow" fill="#F96302" sketch:type="MSShapeGroup" transform="translate(10.607801, 10.365730) rotate(-45.000000) translate(-10.607801, -10.365730) "></path>
+                        </g>
+                     </svg>
+                  </button>
+                  <button type="button" role="presentation" class="carousel__next">
+                     <svg class="carousel__next-button" viewBox="0 0 12 21" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" xmlns:sketch="http://www.bohemiancoding.com/sketch/ns">
+                        <defs></defs>
+                        <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd" sketch:type="MSPage">
+                           <path d="M-5.88468462,4.30628135 L-5.88468462,3.33793528 L8.61614419,3.33793528 L8.61614419,5.27462742 L-3.95902124,5.27462742 L-3.95902124,17.8776664 L-5.88468462,17.8776664 L-5.88468462,4.30628135 Z" id="next-arrow" fill="#F96302" sketch:type="MSShapeGroup" transform="translate(1.365730, 10.607801) rotate(-225.000000) translate(-1.365730, -10.607801) "></path>
+                        </g>
+                     </svg>
+                  </button>
+               </div>
+               <div class="owl-dots disabled"></div>
+            </div>
+            <div class="certona-atc__error certona-atc__hide"></div>
+         </div>
+      </div>
+   </div>`
+        if (document.querySelector('[data-automation-id="testAndTargetBlankCard"]')) 
+        {
+          
+          document.querySelector('[data-automation-id="testAndTargetBlankCard"]').innerHTML=element
+          container = document.getElementById('required_items')
+          carousel = container.querySelector('.carousel__wrapper')
+          carousel.innerHTML = ''
+          initializeCarosuel.call(container, productsHTML)
+          setTimeout(function () {
+            if (
+              document.querySelector(
+                '.tnt_owl-item .certona__productbttnwrapper'
+              )
+            ) {
+              let podButton = document.querySelectorAll(
+                '.tnt_owl-item .certona__productbttnwrapper'
+              )
+              podButton.forEach((e) => {
+                e.onclick = productClickHandler.bind(podButton)
+              })
+            }
+          }, 1000)
+        } else {
+          if (
+            document.getElementById('required_items') &&
+            document
+              .getElementById('required_items')
+              .querySelector('.carousel__wrapper')
+          ) {
+            update()
+          }
+          if ( document.getElementById('required_items').childNodes.length == 0 )
+           {
+            document
+              .getElementById('required_items')
+              .insertAdjacentHTML('afterbegin', element)
+            container = document.getElementById('required_items')
+            carousel = container.querySelector('.carousel__wrapper')
+            carousel.innerHTML = ''
+            initializeCarosuel.call(container, productsHTML)
+          }
+        }
+       // updateWidget(products)
+      }
+    }
+    async function  updateStage  (html) {
+      const stage = this
+      const carousel = stage.closest('.carousel__wrapper')
+      const owlStage = stage.querySelector('.owl-stage')
+      stage.style.width = 'max-content'
+      stage.innerHTML = html
+      jQuery(document).ready(function ($) {
+        $(carousel).owlCarousel()
+        const owlCarousel = $(carousel).data('owl.carousel')
+        if (owlCarousel) {
+          owlCarousel._items = []
+          $(stage)
+            .children()
+            .each((i, el) => {
+              owlCarousel._items.push($(el))
+            })
+          $(carousel).trigger('refresh.owl.carousel')
+          $(carousel).on('translated.owl.carousel', function (_event) {
+            if (
+              $(stage).closest('.owl-stage-outer')[0].getClientRects()[0]
+                .right > $(stage)[0].getClientRects()[0].right
+            ) {
+              const overflow =
+                $(stage).closest('.owl-stage-outer')[0].getClientRects()[0]
+                  .right - $(stage)[0].getClientRects()[0].right
+              let carouselX = parseFloat(
+                $(stage)
+                  .attr('style')
+                  .split(';')[0]
+                  .trim()
+                  .match(transformPattern)[0]
+                  .replace('px', '')
+              )
+              carouselX = carouselX + overflow
+              carouselX = carouselX + 'px'
+              setTimeout(() => {
+                $(stage)
+                  .attr('style')
+                  .split(';')[0]
+                  .trim()
+                  .replace(transformPattern, carouselX)
+              }, 250)
+            }
+          })
+        }
+      })
+    }
+    async function update() {
+      getProducts()
+        .then((products) => {
+          if (products) {
+            const productsHTML = buildProducts(products)
+           // updateWidget(products)
+            let stage = document
+              .getElementById('required_items')
+              .querySelector('.owl-stage')
+            updateStage.call(stage, productsHTML)
+          }
+        })
+        .catch((e) => { })
+    }
+ 
+  
+  /*  const cookieStorage = {
+  get: function(cname) {
+      let name = cname + "=";
+      let ca = document.cookie.split(";");
+      for (var i = 0; i < ca.length; i++) {
+          let c = ca[i];
+          while (c.charAt(0) == " ") {
+              c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+              return c.substring(name.length, c.length);
+          }
+      }
+      return "";
+  },
+  set: function(cname, cvalue, days = 1) {
+      let d = new Date();
+      d.setTime(d.getTime() + days * 24 * 60 * 60 * 1000);
+      let expires = "expires=" + d.toUTCString();
+      document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+  }
+};
+  if (!cookieStorage.get("php_test_card")) {
+      cookieStorage.set("php_test_card", "true");
+  }
+*/
+  function waitForPHPCards() {
+      let timerCount = 1;
+      let timer = setInterval(function() {
+          timerCount = timerCount + 1;
+          if (window.jQuery && document.querySelector('[data-automation-id="testAndTargetBlankCard"]>div'))
+           {
+              // clearInterval(timer);
+              // loadPHPCard();
+              jQuery(document).ready(function ($) {
+                clearInterval(timer);
+                loadPHPCard();
+  
+             })
+          }
+      }, 1000);
+      if (timerCount > 2000) 
+      {
+          clearInterval(timer);
+      }
+ }
+  function loadPHPCard() {
+          document.querySelector('[data-automation-id="testAndTargetBlankCard"]').innerHTML = "";
+          document.querySelector('[data-automation-id="testAndTargetBlankCard"]').setAttribute("id", "tnt_backInStock");
+          backInStock();
+    }
+  waitForPHPCards();
+ /* async function getProducts() {
+        const svoc= getSVOC_ID();
+          const storeID= getStoreID();
+          console.log(svoc);
+          console.log(storeID);
+         const apiLink = `https://datascience-testservice-api.hd-datascience-prod.gcp.homedepot.com/dts/v1/product?anchor=`+svoc+`&model=back_in_stock_alert&appid=desktop&key=AnPrMR0LKfdglJQfoHqsT4sAhDLHNaGw&storeid=`+storeID+``
+         const recosResponse = await fetch(apiLink);
+              if (recosResponse.status !== 200) {
+                  return null;
+              }
+              const data = await recosResponse.json();
+
+              return data;
+      }*/
+    async function  backInStock() {
+      alert("backInStock")
+      const apiData = window.__tntBackInstock;
+      //const apiData = await getProducts();
+       
+      console.log(apiData) 
+      if (apiData['products']) {
+           if(apiData['products'].length==1)
+                              {
+                              createSingleCard(apiData['products']);
+                              }
+                              else if(apiData['products'].length>1)
+                              {
+                                  buildCarousel(apiData)
+                              
+                              }
+                      }
+        
+   }
+  
+  
+  
+  } catch (error) {
+    
+}
+</script>
